@@ -46,6 +46,9 @@ import org.json.JSONObject;
 @Slf4j
 public class PizzaPolicy implements Policy {
 
+    public static final String JSON_TO_HL7 = "json-hl7";
+    public static final String HL7_TO_JSON = "hl7-json";
+    public static final String ACTION_TYPE = "action-type";
     public static final String X_PIZZA_HEADER_TOPPING = "x-pizza-topping";
     public static final String PIZZA_ERROR_KEY = "PIZZA_ERROR";
     public static final String ERROR_PROCESSING_PIZZA = "Error processing pizza";
@@ -108,16 +111,19 @@ public class PizzaPolicy implements Policy {
      */
     private Maybe<Buffer> createPizza(Buffer body, HttpHeaders headers) throws IOException {
         String jsonString = body.toString();
-        System.out.println("jsonString");
-        System.out.println(jsonString);
-        String hl7Str = jsonToHl7(jsonString);
-        System.out.println("hl7Str");
-        System.out.println(hl7Str);
-        Buffer hl7Buffer = Buffer.buffer(hl7Str);
-        if (hl7Str != null) {
-            setContentHeaders(headers, hl7Buffer);
+        String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
+        String actionType = headers.get(ACTION_TYPE);
+        if (contentType != null && contentType.equals(MediaType.APPLICATION_JSON) && actionType != null && actionType.equals(JSON_TO_HL7)) {
+            String hl7Str = jsonToHl7(jsonString);
+            Buffer hl7Buffer = Buffer.buffer(hl7Str);
+            if (hl7Str != null) {
+                setContentHeaders(headers, hl7Buffer);
+            }
+            System.out.println("HL7STR:->  " + hl7Str);
+            return Maybe.just(hl7Buffer);
+        } else {
+            return Maybe.just(body);
         }
-        return Maybe.just(hl7Buffer);
     }
 
     public String jsonToHl7(String data) {

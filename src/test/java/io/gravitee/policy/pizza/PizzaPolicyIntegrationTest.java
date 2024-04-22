@@ -39,9 +39,11 @@ import io.gravitee.apim.gateway.tests.sdk.annotations.GatewayTest;
 import io.gravitee.apim.gateway.tests.sdk.connector.EndpointBuilder;
 import io.gravitee.apim.gateway.tests.sdk.connector.EntrypointBuilder;
 import io.gravitee.common.http.HttpStatusCode;
+import io.gravitee.common.http.MediaType;
 import io.gravitee.definition.model.v4.Api;
 import io.gravitee.definition.model.v4.flow.Flow;
 import io.gravitee.definition.model.v4.flow.step.Step;
+import io.gravitee.gateway.api.http.HttpHeaderNames;
 import io.gravitee.gateway.reactor.ReactableApi;
 import io.gravitee.plugin.endpoint.EndpointConnectorPlugin;
 import io.gravitee.plugin.endpoint.http.proxy.HttpProxyEndpointConnectorFactory;
@@ -68,6 +70,10 @@ import org.junit.jupiter.api.Test;
  * @author GraviteeSource Team
  */
 class PizzaPolicyIntegrationTest {
+
+    public static final String JSON_TO_HL7 = "json-hl7";
+    public static final String HL7_TO_JSON = "hl7-json";
+    public static final String ACTION_TYPE = "action-type";
 
     static class TestPreparer extends AbstractPolicyTest<PizzaPolicy, PizzaPolicyConfiguration> {
 
@@ -97,7 +103,11 @@ class PizzaPolicyIntegrationTest {
                 JsonNode payload = objectMapper.readTree(new File("src/test/resources/payload.json"));
                 httpClient
                     .rxRequest(HttpMethod.GET, "/test")
-                    .flatMap(httpClientRequest -> httpClientRequest.rxSend(payload.toString()))
+                    .flatMap(httpClientRequest -> {
+                        httpClientRequest.headers().add(HttpHeaderNames.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                        httpClientRequest.headers().add(ACTION_TYPE, JSON_TO_HL7);
+                        return httpClientRequest.rxSend(payload.toString());
+                    })
                     .flatMap(response -> {
                         assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK_200);
                         System.out.println("Response Body");
@@ -110,58 +120,4 @@ class PizzaPolicyIntegrationTest {
             }
         }
     }
-    //
-    //    @Nested
-    //    @GatewayTest
-    //    @DeployApi({ "/apis/pizza-api.json", "/apis/pizza-pineapple.json" })
-    //    class OnResponse extends TestPreparer {
-    //
-    //        /**
-    //         * Instead of redefining a json file, we just use the same as for request, and we move the steps (policies) from request to response
-    //         * @param api is the reactable api to modify
-    //         * @param definitionClass is the definition class to use to verify version of api
-    //         */
-    //        @Override
-    //        public void configureApi(ReactableApi<?> api, Class<?> definitionClass) {
-    //            if (isV4Api(definitionClass)) {
-    //                final Api definition = (Api) api.getDefinition();
-    //                final Flow apiFlow = definition.getFlows().get(0);
-    //                final List<Step> requestSteps = apiFlow.getRequest();
-    //                apiFlow.setRequest(List.of());
-    //                apiFlow.setResponse(requestSteps);
-    //            }
-    //        }
-    //
-    //        @Test
-    //        @DisplayName("Should create pizza when toppings provided from body")
-    //        void should_create_pizza_with_body_toppings_on_response(HttpClient httpClient) {
-    //            // Create ObjectMapper instance
-    //            ObjectMapper objectMapper = new ObjectMapper();
-    //
-    //            // Create an empty JSON object
-    //            ObjectNode jsonObject = objectMapper.createObjectNode();
-    //            jsonObject.put("test2", "Hello world 2");
-    //
-    //            wiremock.stubFor(get("/endpoint").willReturn(ok(jsonObject.toString())));
-    //
-    //            httpClient
-    //                .rxRequest(HttpMethod.GET, "/test")
-    //                .flatMap(HttpClientRequest::rxSend)
-    //                .flatMap(response -> {
-    //                    assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK_200);
-    //                    //                    assertThat(response.headers().get(X_PIZZA_HEADER)).isEqualTo(CREATED);
-    //                    return response.body();
-    //                })
-    //                .test()
-    //                .awaitDone(10, TimeUnit.SECONDS)
-    //                .assertComplete()
-    //                //                    .assertValue(body -> {
-    //                //                        assertThat(body).hasToString("{\"crust\":\"Pan\",\"sauce\":\"TOMATO\",\"toppings\":[\"peperoni\",\"cheddar\"]}");
-    //                //                        return true;
-    //                //                    })
-    //                .assertNoErrors();
-    //
-    //            wiremock.verify(1, getRequestedFor(urlPathEqualTo("/endpoint")));
-    //        }
-    //    }
 }
