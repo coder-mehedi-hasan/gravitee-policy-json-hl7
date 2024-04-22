@@ -1,0 +1,355 @@
+[
+    {
+        "elements": [
+            {
+                "name": "encoding_charecter",
+                "value": "^~\\&"
+            },
+            {
+                "name": "sending_application"
+            },
+            {
+                "name": "sending_facility"
+            },
+            {
+                "name": "receiving_application"
+            },
+            {
+                "name": "receiving_facility"
+            },
+            {
+                "name": "date_time_message"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "message_type",
+                "sub": [
+                    {
+                        "name": "message_code"
+                    },
+                    {
+                        "name": "trigger_event"
+                    }
+                ]
+            },
+            {
+                "name": "message_control_id"
+            },
+            {
+                "name": "processing_id"
+            },
+            {
+                "name": "version_id"
+            }
+        ],
+        "name": "messageHeader",
+        "init": "MSH"
+    },
+    {
+        "elements": [
+            {
+                "name": null
+            },
+            {
+                "name": "patient_id"
+            },
+            {
+                "name": "identifier_list"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "patient_name",
+                "sub": [
+                    {
+                        "name": "family_name"
+                    },
+                    {
+                        "name": "given_name"
+                    },
+                    {
+                        "name": null
+                    },
+                    {
+                        "name": null
+                    },
+                    {
+                        "name": "prefix"
+                    }
+                ]
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "date_time_birth"
+            },
+            {
+                "name": "sex"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "address",
+                "sub": [
+                    {
+                        "name": "street_adress"
+                    },
+                    {
+                        "name": null
+                    },
+                    {
+                        "name": "city"
+                    },
+                    {
+                        "name": "state"
+                    },
+                    {
+                        "name": "postal_code"
+                    },
+                    {
+                        "name": "country"
+                    }
+                ]
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            }
+        ],
+        "name": "patientIdentification",
+        "init": "PID"
+    },
+    {
+        "elements": [
+            {
+                "name": null
+            },
+            {
+                "name": "patient_class"
+            },
+            {
+                "name": "patient_location",
+                "sub": [
+                    {
+                        "name": "point_care",
+                        "value": "care"
+                    },
+                    {
+                        "name": "room"
+                    }
+                ]
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "attending_doctor",
+                "sub": [
+                    {
+                        "name": "id"
+                    },
+                    {
+                        "name": "family_name"
+                    },
+                    {
+                        "name": "given_name"
+                    }
+                ]
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "hospital_service"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "visit_number"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "admit_date_time"
+            }
+        ],
+        "name": "patientVisit",
+        "init": "PV1"
+    },
+    {
+        "elements": [
+            {
+                "name": "order_control"
+            },
+            {
+                "name": "place_order_number"
+            }
+        ],
+        "name": "commonOrder",
+        "init": "ORC"
+    },
+    {
+        "elements": [
+            {
+                "name": "set_id"
+            },
+            {
+                "name": "place_order_number"
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "universal_service",
+                "sub": [
+                    {
+                        "name": "identifier"
+                    },
+                    {
+                        "name": "text"
+                    },
+                    {
+                        "name": "coding_system"
+                    }
+                ]
+            },
+            {
+                "name": null
+            },
+            {
+                "name": null
+            },
+            {
+                "name": "observation_date_time"
+            }
+        ],
+        "name": "observationRequest",
+        "init": "OBR"
+    }
+]

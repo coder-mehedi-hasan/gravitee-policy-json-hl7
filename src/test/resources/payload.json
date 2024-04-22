@@ -1,0 +1,63 @@
+{
+    "messageHeader": {
+        "sending_facility": "Instance1",
+        "sending_application": "HL7Soup",
+        "receiving_application": "HL7Soup",
+        "receiving_facility": "Instance2",
+        "date_time_message": "20240415104425",
+        "message_type": {
+            "message_code": "ORM",
+            "trigger_event": "001"
+        },
+        "message_control_id": "MSGID20060307110114",
+        "processing_id": "P",
+        "version_id": "2.5.1"
+    },
+    "patientIdentification": {
+        "patient_id": "81243",
+        "identifier_list": "12001",
+        "patient_name": {
+            "family_name": "Jones",
+            "given_name": "John",
+            "prefix": "Mr."
+        },
+        "date_time_birth": "20011025051236",
+        "sex": "M",
+        "address": {
+            "street_adress": "123 West St.",
+            "city": "Denver",
+            "state": "CO",
+            "postal_code": "80020",
+            "country": "USA"
+        }
+    },
+    "patientVisit": {
+        "patient_class": "O",
+        "patient_location": {
+            "point_care": "OP",
+            "room": "PAREG"
+        },
+        "attending_doctor": {
+            "id": "2342",
+            "family_name": "Jones",
+            "given_name": "Bob"
+        },
+        "hospital_service": "CAR",
+        "visit_number": "2",
+        "admit_date_time": "20240415105422"
+    },
+    "commonOrder": {
+        "order_control": "NW",
+        "place_order_number": "202404151101"
+    },
+    "observationRequest": {
+        "set_id": "1",
+        "place_order_number": "20060307110114",
+        "universal_service": {
+            "identifier": "003038",
+            "text": "Urinalysis",
+            "coding_system": "L"
+        },
+        "observation_date_time": "20240415110325"
+    }
+}
