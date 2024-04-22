@@ -100,13 +100,19 @@ class PizzaPolicyIntegrationTest {
         void should_create_pizza_with_body_toppings_on_request(HttpClient httpClient) {
             try {
                 wiremock.stubFor(get("/endpoint").willReturn(ok()));
-                JsonNode payload = objectMapper.readTree(new File("src/test/resources/payload.json"));
+                JsonNode payloadJson = objectMapper.readTree(new File("src/test/resources/payload.json"));
+                String payloadHl7 =
+                    "MSH|^~\\&|HL7Soup|Instance1|HL7Soup|Instance2|20240415104425||ORM^001|MSGID20060307110114|P|2.5.1\n" +
+                    "PID||81243|12001||Jones^John^^^Mr.||20011025051236|M|||123 West St.^^Denver^CO^80020^USA|||||||\n" +
+                    "PV1||O|OP^PAREG||||2342^Jones^Bob|||CAR|||||||||2|||||||||||||||||||||||||20240415105422\n" +
+                    "ORC|NW|202404151101\n" +
+                    "OBR|1|20060307110114||003038^Urinalysis^L|||20240415110325";
                 httpClient
                     .rxRequest(HttpMethod.GET, "/test")
                     .flatMap(httpClientRequest -> {
-                        httpClientRequest.headers().add(HttpHeaderNames.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-                        httpClientRequest.headers().add(ACTION_TYPE, JSON_TO_HL7);
-                        return httpClientRequest.rxSend(payload.toString());
+                        httpClientRequest.headers().add(HttpHeaderNames.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+                        httpClientRequest.headers().add(ACTION_TYPE, HL7_TO_JSON);
+                        return httpClientRequest.rxSend(payloadHl7.toString());
                     })
                     .flatMap(response -> {
                         assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK_200);

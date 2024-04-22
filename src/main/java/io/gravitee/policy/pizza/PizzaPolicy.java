@@ -17,6 +17,8 @@ package io.gravitee.policy.pizza;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.gravitee.common.http.MediaType;
 import io.gravitee.gateway.api.buffer.Buffer;
 import io.gravitee.gateway.api.http.HttpHeaderNames;
@@ -70,9 +72,10 @@ public class PizzaPolicy implements Policy {
         this.methods = new methods();
     }
 
-    private static void setContentHeaders(final HttpHeaders headers, final Buffer strBuffer) {
-        headers.set(HttpHeaderNames.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-        headers.set(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(strBuffer.length()));
+    private static void setContentHeaders(final HttpHeaders headers, final Buffer buffer, String headerType, String actionType) {
+        headers.set(HttpHeaderNames.CONTENT_TYPE, headerType);
+        headers.set(HttpHeaderNames.CONTENT_LENGTH, Integer.toString(buffer.length()));
+        headers.set(ACTION_TYPE, actionType);
     }
 
     @Override
@@ -110,17 +113,27 @@ public class PizzaPolicy implements Policy {
      * @throws IOException or RuntimeException that will be managed by the caller.
      */
     private Maybe<Buffer> createPizza(Buffer body, HttpHeaders headers) throws IOException {
-        String jsonString = body.toString();
+        String bodyString = body.toString();
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
         String actionType = headers.get(ACTION_TYPE);
         if (contentType != null && contentType.equals(MediaType.APPLICATION_JSON) && actionType != null && actionType.equals(JSON_TO_HL7)) {
-            String hl7Str = jsonToHl7(jsonString);
+            String hl7Str = jsonToHl7(bodyString);
             Buffer hl7Buffer = Buffer.buffer(hl7Str);
             if (hl7Str != null) {
-                setContentHeaders(headers, hl7Buffer);
+                setContentHeaders(headers, hl7Buffer, MediaType.TEXT_PLAIN, actionType);
             }
             System.out.println("HL7STR:->  " + hl7Str);
             return Maybe.just(hl7Buffer);
+        } else if (
+            contentType != null && contentType.equals(MediaType.TEXT_PLAIN) && actionType != null && actionType.equals(HL7_TO_JSON)
+        ) {
+            ObjectNode json = hl7ToJson(bodyString);
+            System.out.println("JSON:->" + json.toString());
+            Buffer jsonBuffer = Buffer.buffer(json.toString());
+            if (json != null) {
+                setContentHeaders(headers, jsonBuffer, MediaType.APPLICATION_JSON, actionType);
+            }
+            return Maybe.just(jsonBuffer);
         } else {
             return Maybe.just(body);
         }
@@ -204,6 +217,89 @@ public class PizzaPolicy implements Policy {
             System.out.println("Error: " + e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    public ObjectNode hl7ToJson(String hl7Msg) {
+        JSONObject jsonObject = new JSONObject();
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode fieldsHl7 = objectMapper.createArrayNode();
+        ObjectNode fieldObj = objectMapper.createObjectNode();
+
+        try {
+            JsonNode fields = objectMapper.readTree(methods.fieldsString);
+            if (fields.isArray()) {
+                for (JsonNode field : fields) {
+                    String init = field.get("init").textValue();
+                    boolean found = hl7Msg.contains(init);
+                    if (found) {
+                        int startAt = hl7Msg.indexOf(init);
+                        ((ObjectNode) field).put("startAt", startAt);
+                        fieldsHl7.add(field);
+                    }
+                }
+            }
+
+            ArrayNode fieldsWithMessage = objectMapper.createArrayNode();
+            for (int i = 0; i < fieldsHl7.size(); i++) {
+                JsonNode field = fieldsHl7.get(i);
+                if (field.has("startAt")) {
+                    int startAt = field.get("startAt").asInt();
+                    String msg = "";
+                    if (fieldsHl7.size() == i + 1) {
+                        msg = hl7Msg.substring(startAt, hl7Msg.length());
+                    } else {
+                        JsonNode nextField = fieldsHl7.get(i + 1);
+                        int nextStart = nextField.get("startAt").asInt();
+                        msg = hl7Msg.substring(startAt, nextStart);
+                    }
+                    ((ObjectNode) field).put("msg", msg);
+                    fieldsWithMessage.add(field);
+                }
+            }
+
+            for (JsonNode field : fieldsWithMessage) {
+                String msgs = field.get("msg").textValue();
+                String[] partMsg = msgs.split("\\|");
+                ObjectNode msgObj = objectMapper.createObjectNode();
+                for (int index = 0; index < partMsg.length; index++) {
+                    String msg = partMsg[index];
+                    if (index != 0 && !msg.isEmpty()) {
+                        JsonNode elements = field.get("elements");
+                        if (elements.isArray()) {
+                            JsonNode element = elements.get(index - 1);
+                            JsonNode subElements = element.get("sub");
+                            String elementName = element.get("name").textValue();
+                            if ((subElements == null || subElements.isNull()) && elementName != null) {
+                                msgObj.put(elementName, msg);
+                            } else if (elementName != null && subElements.isArray()) {
+                                ObjectNode obj = objectMapper.createObjectNode();
+                                String[] subMsgs = msg.split("\\^");
+                                for (int i = 0; i < subMsgs.length; i++) {
+                                    String subMsg = subMsgs[i];
+                                    if (subMsg != null && !subMsg.isEmpty()) {
+                                        JsonNode subElement = subElements.get(i);
+                                        if (subElement != null) {
+                                            String subElementName = subElement.get("name").textValue();
+                                            if (subElementName != null && !subElementName.isEmpty()) {
+                                                obj.put(subElementName, subMsg);
+                                            }
+                                        }
+                                    }
+                                }
+                                msgObj.put(elementName, obj);
+                            }
+                        }
+                    }
+                }
+                String fieldName = field.get("name").textValue();
+                if (fieldName != null && !fieldName.isEmpty()) {
+                    fieldObj.put(fieldName, msgObj);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return fieldObj;
     }
 
     /**
