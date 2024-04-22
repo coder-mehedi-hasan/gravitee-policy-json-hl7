@@ -90,18 +90,29 @@ public class PizzaPolicy implements Policy {
                     .flatMapMaybe(body -> {
                         System.out.println("payload body");
                         System.out.println(body);
-                        Maybe<Buffer> str = createPizza(body, ctx.request().headers());
+                        Maybe<Buffer> str = converter(body, ctx.request().headers());
                         System.out.println("payload response");
                         str.subscribe(buffer -> System.out.println(buffer.toString()));
-                        //                        System.out.println("Response header");
-                        //                        System.out.println(ctx.request().headers().get("test"));
                         return str;
                     })
                     // If no pizza has been created, then handle the case
-                    .switchIfEmpty(handleNoPizza(ctx.request().headers(), ctx))
+                    .switchIfEmpty(handleNoBody(ctx.request().headers(), ctx))
                     .doOnComplete(() -> {
                         System.out.println("Response logged successfully.");
                     })
+            );
+    }
+
+    @Override
+    public Completable onResponse(HttpExecutionContext ctx) {
+        return ctx
+            .response()
+            .onBody(maybeBody ->
+                maybeBody
+                    // If no body, then use an empty buffer
+                    .defaultIfEmpty(Buffer.buffer())
+                    .flatMapMaybe(body -> converter(body, ctx.response().headers()))
+                    .switchIfEmpty(handleNoBody(ctx.response().headers(), ctx))
             );
     }
 
@@ -112,7 +123,7 @@ public class PizzaPolicy implements Policy {
      * @return a Maybe.empty() if no topping provided, a Maybe.just(createdPizza) if there are toppings.
      * @throws IOException or RuntimeException that will be managed by the caller.
      */
-    private Maybe<Buffer> createPizza(Buffer body, HttpHeaders headers) throws IOException {
+    private Maybe<Buffer> converter(Buffer body, HttpHeaders headers) throws IOException {
         String bodyString = body.toString();
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
         String actionType = headers.get(ACTION_TYPE);
@@ -308,8 +319,8 @@ public class PizzaPolicy implements Policy {
      * @param headers
      * @return
      */
-    private static Maybe<Buffer> handleNoPizza(HttpHeaders headers, HttpExecutionContext ctx) {
-        System.out.println("Pizza is empty");
+    private static Maybe<Buffer> handleNoBody(HttpHeaders headers, HttpExecutionContext ctx) {
+        System.out.println("Body is empty");
 
         return Maybe.fromCallable(() -> {
             headers.add(X_PIZZA_HEADER, NOT_CREATED);

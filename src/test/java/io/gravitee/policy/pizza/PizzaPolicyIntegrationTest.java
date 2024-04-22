@@ -126,4 +126,58 @@ class PizzaPolicyIntegrationTest {
             }
         }
     }
+
+    @Nested
+    @GatewayTest
+    @DeployApi({ "/apis/pizza-api.json", "/apis/pizza-pineapple.json" })
+    class OnResponse extends TestPreparer {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        /**
+         * Instead of redefining a json file, we just use the same as for request, and we move the steps (policies) from request to response
+         * @param api is the reactable api to modify
+         * @param definitionClass is the definition class to use to verify version of api
+         */
+        @Override
+        public void configureApi(ReactableApi<?> api, Class<?> definitionClass) {
+            if (isV4Api(definitionClass)) {
+                final Api definition = (Api) api.getDefinition();
+                final Flow apiFlow = definition.getFlows().get(0);
+                final List<Step> requestSteps = apiFlow.getRequest();
+                apiFlow.setRequest(List.of());
+                apiFlow.setResponse(requestSteps);
+            }
+        }
+
+        @Test
+        @DisplayName("Should create pizza when toppings provided from body")
+        void should_create_pizza_with_body_toppings_on_response(HttpClient httpClient) {
+            try {
+                JsonNode payloadJson = objectMapper.readTree(new File("src/test/resources/payload.json"));
+                String payloadHl7 =
+                    "MSH|^~\\&|HL7Soup|Instance1|HL7Soup|Instance2|20240415104425||ORM^001|MSGID20060307110114|P|2.5.1\n" +
+                    "PID||81243|12001||Jones^John^^^Mr.||20011025051236|M|||123 West St.^^Denver^CO^80020^USA|||||||\n" +
+                    "PV1||O|OP^PAREG||||2342^Jones^Bob|||CAR|||||||||2|||||||||||||||||||||||||20240415105422\n" +
+                    "ORC|NW|202404151101\n" +
+                    "OBR|1|20060307110114||003038^Urinalysis^L|||20240415110325";
+
+                wiremock.stubFor(get("/endpoint").willReturn(ok(payloadJson.toString())));
+
+                httpClient
+                    .rxRequest(HttpMethod.GET, "/test")
+                    .flatMap(HttpClientRequest::rxSend)
+                    .flatMap(response -> {
+                        System.out.println("onResponse Response Body " + response.body().toString());
+                        //                            assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK_200);
+                        return response.body();
+                    })
+                    .test()
+                    .awaitDone(10, TimeUnit.SECONDS);
+                wiremock.verify(1, getRequestedFor(urlPathEqualTo("/endpoint")));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
