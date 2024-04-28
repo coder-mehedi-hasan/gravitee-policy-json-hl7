@@ -111,7 +111,17 @@ public class PizzaPolicy implements Policy {
                 maybeBody
                     // If no body, then use an empty buffer
                     .defaultIfEmpty(Buffer.buffer())
-                    .flatMapMaybe(body -> converter(body, ctx.response().headers()))
+                    .flatMapMaybe(body -> {
+                        System.out.println("payload body response");
+                        System.out.println(body);
+                        System.out.println("payload body response header");
+                        System.out.println(ctx.response().headers().get(HttpHeaderNames.CONTENT_TYPE));
+                        System.out.println(ctx.response().headers().get(ACTION_TYPE));
+                        Maybe<Buffer> str = converter(body, ctx.response().headers());
+                        System.out.println("payload response");
+                        str.subscribe(buffer -> System.out.println(buffer.toString()));
+                        return str;
+                    })
                     .switchIfEmpty(handleNoBody(ctx.response().headers(), ctx))
             );
     }
@@ -128,6 +138,7 @@ public class PizzaPolicy implements Policy {
         String contentType = headers.get(HttpHeaderNames.CONTENT_TYPE);
         String actionType = headers.get(ACTION_TYPE);
         if (contentType != null && contentType.equals(MediaType.APPLICATION_JSON) && actionType != null && actionType.equals(JSON_TO_HL7)) {
+            System.out.println("First");
             String hl7Str = jsonToHl7(bodyString);
             Buffer hl7Buffer = Buffer.buffer(hl7Str);
             if (hl7Str != null) {
@@ -136,8 +147,12 @@ public class PizzaPolicy implements Policy {
             System.out.println("HL7STR:->  " + hl7Str);
             return Maybe.just(hl7Buffer);
         } else if (
-            contentType != null && contentType.equals(MediaType.TEXT_PLAIN) && actionType != null && actionType.equals(HL7_TO_JSON)
+            contentType != null &&
+            (contentType.equals(MediaType.TEXT_PLAIN) || contentType.startsWith(MediaType.TEXT_PLAIN)) &&
+            actionType != null &&
+            actionType.equals(HL7_TO_JSON)
         ) {
+            System.out.println("2ND");
             ObjectNode json = hl7ToJson(bodyString);
             System.out.println("JSON:->" + json.toString());
             Buffer jsonBuffer = Buffer.buffer(json.toString());
@@ -146,6 +161,7 @@ public class PizzaPolicy implements Policy {
             }
             return Maybe.just(jsonBuffer);
         } else {
+            System.out.println("Else " + MediaType.TEXT_PLAIN);
             return Maybe.just(body);
         }
     }

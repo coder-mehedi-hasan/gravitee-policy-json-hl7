@@ -166,7 +166,10 @@ class PizzaPolicyIntegrationTest {
 
                 httpClient
                     .rxRequest(HttpMethod.GET, "/test")
-                    .flatMap(HttpClientRequest::rxSend)
+                    .flatMap(request -> {
+                        request.headers().add(HttpHeaderNames.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+                        return request.rxSend();
+                    })
                     .flatMap(response -> {
                         System.out.println("onResponse Response Body " + response.body().toString());
                         //                            assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK_200);
