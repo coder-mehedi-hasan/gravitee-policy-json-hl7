@@ -1,4 +1,4 @@
-= Pizza Factory policy
+= JSON HL7 Conversion Policy
 
 == Phases
 
