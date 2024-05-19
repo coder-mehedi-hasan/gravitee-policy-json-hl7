@@ -30,6 +30,5 @@ import lombok.Setter;
 public class Pizza {
 
     private String crust;
-    private Sauce sauce;
     private Set<String> toppings;
 }

@@ -16,7 +16,6 @@
 package io.gravitee.policy.json_hl7.configuration;
 
 import io.gravitee.policy.api.PolicyConfiguration;
-import io.gravitee.policy.json_hl7.Sauce;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,9 +27,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PizzaPolicyConfiguration implements PolicyConfiguration {
+public class MainPolicyConfiguration implements PolicyConfiguration {
 
     private String crust;
-    private Sauce sauce;
     private boolean pineappleForbidden = true;
 }

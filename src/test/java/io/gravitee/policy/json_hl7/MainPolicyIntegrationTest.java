@@ -39,7 +39,7 @@ import io.gravitee.plugin.endpoint.EndpointConnectorPlugin;
 import io.gravitee.plugin.endpoint.http.proxy.HttpProxyEndpointConnectorFactory;
 import io.gravitee.plugin.entrypoint.EntrypointConnectorPlugin;
 import io.gravitee.plugin.entrypoint.http.proxy.HttpProxyEntrypointConnectorFactory;
-import io.gravitee.policy.json_hl7.configuration.PizzaPolicyConfiguration;
+import io.gravitee.policy.json_hl7.configuration.MainPolicyConfiguration;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.rxjava3.core.http.HttpClient;
 import java.io.File;
@@ -55,13 +55,13 @@ import org.junit.jupiter.api.Test;
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-class PizzaPolicyIntegrationTest {
+class MainPolicyIntegrationTest {
 
     public static final String JSON_TO_HL7 = "json-hl7";
     public static final String HL7_TO_JSON = "hl7-json";
     public static final String ACTION_TYPE = "action-type";
 
-    static class TestPreparer extends AbstractPolicyTest<PizzaPolicy, PizzaPolicyConfiguration> {
+    static class TestPreparer extends AbstractPolicyTest<MainPolicy, MainPolicyConfiguration> {
 
         @Override
         public void configureEntrypoints(Map<String, EntrypointConnectorPlugin<?, ?>> entrypoints) {

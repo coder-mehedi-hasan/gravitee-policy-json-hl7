@@ -25,7 +25,7 @@ import io.gravitee.gateway.api.http.HttpHeaderNames;
 import io.gravitee.gateway.api.http.HttpHeaders;
 import io.gravitee.gateway.reactive.api.context.HttpExecutionContext;
 import io.gravitee.gateway.reactive.api.policy.Policy;
-import io.gravitee.policy.json_hl7.configuration.PizzaPolicyConfiguration;
+import io.gravitee.policy.json_hl7.configuration.MainPolicyConfiguration;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import org.json.JSONObject;
  * @author GraviteeSource Team
  */
 @Slf4j
-public class PizzaPolicy implements Policy {
+public class MainPolicy implements Policy {
 
     public static final String JSON_TO_HL7 = "json-hl7";
     public static final String HL7_TO_JSON = "hl7-json";
@@ -53,14 +53,14 @@ public class PizzaPolicy implements Policy {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private final methods methods;
-    private final PizzaPolicyConfiguration configuration;
+    private final MainPolicyConfiguration configuration;
 
     @Override
     public String id() {
         return "conversion-json-hl7";
     }
 
-    public PizzaPolicy(PizzaPolicyConfiguration configuration) throws URISyntaxException {
+    public MainPolicy(MainPolicyConfiguration configuration) throws URISyntaxException {
         this.configuration = configuration;
         this.methods = new methods();
     }
