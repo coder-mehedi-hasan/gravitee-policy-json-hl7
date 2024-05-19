@@ -82,8 +82,8 @@ class MainPolicyIntegrationTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         @Test
-        @DisplayName("Should create pizza when toppings provided from body")
-        void should_create_pizza_with_body_toppings_on_request(HttpClient httpClient) {
+        @DisplayName("Should Convert Hl7 Json when toppings provided from body")
+        void should_convert_hl7_json_with_body_toppings_on_request(HttpClient httpClient) {
             try {
                 wiremock.stubFor(get("/endpoint").willReturn(ok()));
                 JsonNode payloadJson = objectMapper.readTree(new File("src/test/resources/payload.json"));
@@ -137,8 +137,8 @@ class MainPolicyIntegrationTest {
         }
 
         @Test
-        @DisplayName("Should create pizza when toppings provided from body")
-        void should_create_pizza_with_body_toppings_on_response(HttpClient httpClient) {
+        @DisplayName("Should Convert Hl7 Json when toppings provided from body")
+        void should_convert_hl7_json_with_body_toppings_on_response(HttpClient httpClient) {
             try {
                 JsonNode payloadJson = objectMapper.readTree(new File("src/test/resources/payload.json"));
                 String payloadHl7 =
