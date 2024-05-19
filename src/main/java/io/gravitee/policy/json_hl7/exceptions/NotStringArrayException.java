@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza;
-
-import java.util.Set;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+package io.gravitee.policy.json_hl7.exceptions;
 
 /**
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-@Builder
-@Getter
-@Setter
-public class Pizza {
+public class NotStringArrayException extends RuntimeException {
 
-    private String crust;
-    private Sauce sauce;
-    private Set<String> toppings;
+    public static final String ERROR_BODY_SHOULD_BE_AN_ARRAY_OF_STRINGS = "Body should be an array of strings";
+
+    @Override
+    public String getMessage() {
+        return ERROR_BODY_SHOULD_BE_AN_ARRAY_OF_STRINGS;
+    }
 }

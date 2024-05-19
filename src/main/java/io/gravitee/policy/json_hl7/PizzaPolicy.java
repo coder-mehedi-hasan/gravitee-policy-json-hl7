@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza;
+package io.gravitee.policy.json_hl7;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,19 +25,12 @@ import io.gravitee.gateway.api.http.HttpHeaderNames;
 import io.gravitee.gateway.api.http.HttpHeaders;
 import io.gravitee.gateway.reactive.api.context.HttpExecutionContext;
 import io.gravitee.gateway.reactive.api.policy.Policy;
-import io.gravitee.policy.pizza.configuration.PizzaPolicyConfiguration;
+import io.gravitee.policy.json_hl7.configuration.PizzaPolicyConfiguration;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Maybe;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import jdk.jfr.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
@@ -64,7 +57,7 @@ public class PizzaPolicy implements Policy {
 
     @Override
     public String id() {
-        return "pizza-factory";
+        return "conversion-json-hl7";
     }
 
     public PizzaPolicy(PizzaPolicyConfiguration configuration) throws URISyntaxException {

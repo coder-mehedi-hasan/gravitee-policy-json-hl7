@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza;
+package io.gravitee.policy.json_hl7;
+
+import java.util.Set;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-public enum Sauce {
-    TOMATO,
-    CREAM,
+@Builder
+@Getter
+@Setter
+public class Pizza {
+
+    private String crust;
+    private Sauce sauce;
+    private Set<String> toppings;
 }

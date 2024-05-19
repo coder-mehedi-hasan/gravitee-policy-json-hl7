@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza.exceptions;
+package io.gravitee.policy.json_hl7.exceptions;
 
 /**
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-public class PizzaProcessingException extends RuntimeException {
+public class PineappleForbiddenException extends RuntimeException {
 
-    public PizzaProcessingException(String message) {
-        super(message);
+    public static final String ERROR_PINEAPPLE_FORBIDDEN = "Pineapple forbidden! 🍍";
+
+    @Override
+    public String getMessage() {
+        return ERROR_PINEAPPLE_FORBIDDEN;
     }
 }

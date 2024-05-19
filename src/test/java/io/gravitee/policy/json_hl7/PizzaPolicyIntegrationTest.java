@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza;
+package io.gravitee.policy.json_hl7;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static io.gravitee.apim.gateway.tests.sdk.utils.HttpClientUtils.extractHeaders;
-import static io.gravitee.policy.pizza.PizzaPolicy.CREATED;
-import static io.gravitee.policy.pizza.PizzaPolicy.NOT_CREATED;
-import static io.gravitee.policy.pizza.PizzaPolicy.X_PIZZA_HEADER;
-import static io.gravitee.policy.pizza.PizzaPolicy.X_PIZZA_HEADER_TOPPING;
-import static io.gravitee.policy.pizza.exceptions.NotStringArrayException.ERROR_BODY_SHOULD_BE_AN_ARRAY_OF_STRINGS;
-import static io.gravitee.policy.pizza.exceptions.PineappleForbiddenException.ERROR_PINEAPPLE_FORBIDDEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.gravitee.apim.gateway.tests.sdk.AbstractPolicyTest;
 import io.gravitee.apim.gateway.tests.sdk.annotations.DeployApi;
 import io.gravitee.apim.gateway.tests.sdk.annotations.GatewayTest;
@@ -49,13 +39,9 @@ import io.gravitee.plugin.endpoint.EndpointConnectorPlugin;
 import io.gravitee.plugin.endpoint.http.proxy.HttpProxyEndpointConnectorFactory;
 import io.gravitee.plugin.entrypoint.EntrypointConnectorPlugin;
 import io.gravitee.plugin.entrypoint.http.proxy.HttpProxyEntrypointConnectorFactory;
-import io.gravitee.policy.pizza.configuration.PizzaPolicyConfiguration;
+import io.gravitee.policy.json_hl7.configuration.PizzaPolicyConfiguration;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.rxjava3.core.buffer.Buffer;
 import io.vertx.rxjava3.core.http.HttpClient;
-import io.vertx.rxjava3.core.http.HttpClientRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

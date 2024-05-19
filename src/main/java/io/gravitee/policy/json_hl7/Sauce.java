@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza.exceptions;
+package io.gravitee.policy.json_hl7;
 
 /**
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-public class NotStringArrayException extends RuntimeException {
-
-    public static final String ERROR_BODY_SHOULD_BE_AN_ARRAY_OF_STRINGS = "Body should be an array of strings";
-
-    @Override
-    public String getMessage() {
-        return ERROR_BODY_SHOULD_BE_AN_ARRAY_OF_STRINGS;
-    }
+public enum Sauce {
+    TOMATO,
+    CREAM,
 }

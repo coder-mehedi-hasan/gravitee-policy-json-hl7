@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.gravitee.policy.pizza.exceptions;
+package io.gravitee.policy.json_hl7.configuration;
+
+import io.gravitee.policy.api.PolicyConfiguration;
+import io.gravitee.policy.json_hl7.Sauce;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author Yann TAVERNIER (yann.tavernier at graviteesource.com)
  * @author GraviteeSource Team
  */
-public class PineappleForbiddenException extends RuntimeException {
+@Getter
+@Setter
+@NoArgsConstructor
+public class PizzaPolicyConfiguration implements PolicyConfiguration {
 
-    public static final String ERROR_PINEAPPLE_FORBIDDEN = "Pineapple forbidden! 🍍";
-
-    @Override
-    public String getMessage() {
-        return ERROR_PINEAPPLE_FORBIDDEN;
-    }
+    private String crust;
+    private Sauce sauce;
+    private boolean pineappleForbidden = true;
 }

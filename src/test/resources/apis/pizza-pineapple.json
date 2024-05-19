@@ -58,7 +58,7 @@
                     "name": "Pizza Factory on request",
                     "description": "Create your pizza from request headers!",
                     "enabled": true,
-                    "policy": "pizza-factory",
+                    "policy": "conversion-json-hl7",
                     "configuration": {
                         "crust": "Pan",
                         "sauce": "TOMATO",
